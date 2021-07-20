@@ -1,4 +1,5 @@
 import {
+	DynamicDrawUsage,
 	SphereGeometry,
 	BoxGeometry,
 	MeshStandardMaterial,
@@ -6,6 +7,9 @@ import {
 	Matrix4,
 	Vector3
 } from '../../../build/three.module.js';
+
+const _matrix = new Matrix4();
+const _vector = new Vector3();
 
 class XRHandPrimitiveModel {
 
@@ -30,7 +34,7 @@ class XRHandPrimitiveModel {
 		const material = new MeshStandardMaterial();
 
 		this.handMesh = new InstancedMesh( geometry, material, 30 );
-		this.handMesh.instanceMatrix.setUsage( THREE.DynamicDrawUsage ); // will be updated every frame
+		this.handMesh.instanceMatrix.setUsage( DynamicDrawUsage ); // will be updated every frame
 		this.handMesh.castShadow = true;
 		this.handMesh.receiveShadow = true;
 		this.handModel.add( this.handMesh );
@@ -63,9 +67,6 @@ class XRHandPrimitiveModel {
 			'pinky-finger-tip'
 		];
 
-		this.tempMat = new Matrix4();
-		this.tempVec = new Vector3();
-
 	}
 
 	updateMesh() {
@@ -81,9 +82,9 @@ class XRHandPrimitiveModel {
 
 			if ( joint.visible ) {
 
-				this.tempVec.setScalar( joint.jointRadius || defaultRadius );
-				this.tempMat.compose( joint.position, joint.quaternion, this.tempVec );
-				this.handMesh.setMatrixAt( i, this.tempMat );
+				_vector.setScalar( joint.jointRadius || defaultRadius );
+				_matrix.compose( joint.position, joint.quaternion, _vector );
+				this.handMesh.setMatrixAt( i, _matrix );
 
 				count ++;
 
